@@ -54,9 +54,10 @@ def get_links(html_content,base_url):
 	arr_links = []
 	soup = BeautifulSoup(html_content,"html.parser")
 	for links in soup.find_all("a",href=True):
-		link = links.get("href")
-		arr_links.append(urljoin(base_url,link))
-		# arr_links.append(link)
+		base_link = links.get("href")
+		full_link = urljoin(base_url, base_link)
+		if full_link.startswith("http"):
+			arr_links.append(urljoin(base_url,full_link))
 	return arr_links
 
 def acces_url(url):
@@ -68,7 +69,21 @@ def acces_url(url):
 	return html_content
 
 
-def spider():
+def spider(url,path,depth):
+	if depth <= 0:
+			return
+	html_content = acces_url(url)
+
+	# while depth >= 0:
+
+	get_images(html_content, url,path)
+	arr_links = get_links(html_content,url)
+	i = 0;
+	for link in arr_links:
+		spider(link,path,depth-1)
+
+
+def main():
 	args = parse_args()
 	if args.p:
 		path = args.p
@@ -79,22 +94,13 @@ def spider():
 	else:
 		depth = 5
 	url = args.url
-	html_content = acces_url(url)
 	make_path(path)
-
-	# while depth >= 0:
-
-	get_images(html_content, url,path)
-	arr_links = get_links(html_content,url)
-	for link in arr_links:
-		print(link)
-
-
-def main():
-	spider()
+	spider(url,path,depth)
 
 
 if __name__ == "__main__":
 	main()
 
 # https://www.magherallylens.com/simple-blogging-platforms/
+
+# next add maps to check visited links
