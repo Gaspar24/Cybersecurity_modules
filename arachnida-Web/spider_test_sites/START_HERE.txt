@@ -1,0 +1,24 @@
+SPIDER TEST SITES
+=================
+
+There are three separate mini-sites:
+1. site-1-garden
+2. site-2-space
+3. site-3-cafe
+
+Each site has four HTML pages and five local images. The pages link to one another,
+including a few back-links to test your visited URL tracking.
+
+IMPORTANT:
+Start the server from inside ONE site folder at a time, not from the parent folder.
+
+Example:
+    cd site-1-garden
+    python3 -m http.server 8000
+
+Then in another terminal, run your spider:
+    ./spider.py http://localhost:8000/
+    ./spider.py -r -l 1 http://localhost:8000/
+    ./spider.py -r -l 2 http://localhost:8000/
+
+Stop the server with Ctrl+C. Use a different port if 8000 is already occupied.
