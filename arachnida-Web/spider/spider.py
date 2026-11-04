@@ -12,16 +12,26 @@ VALID_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.gif', '.bmp')
 
 def parse_args():
 	parser = argparse.ArgumentParser(description="Spider")
-	parser.add_argument("-r", action="store_true", help="Recursively download images")
-	parser.add_argument("-l", type=int, default=5, help="Maximum recursion depth (default: 5)")
-	parser.add_argument("-p", type=str, default="./data/", help="Output folder (default: ./data/)")
+
+	parser.add_argument("-r", action="store_true",
+                        help="recursively download images")
+	parser.add_argument("-l", type=int, default=5,
+                        help="maximum recursion depth (default: 5)")
+	parser.add_argument("-p", type=str, default="./data/",
+                        help="output folder (default: ./data/)")
 	parser.add_argument("url", type=str, help="Target URL")
+
 	args = parser.parse_args()
+
 	if args.l < 0:
-		parser.error("depth level (-l) must be a positive integer.")
+		parser.error("Depth level must be a positive integer.")
+
 	if not args.r:
 		args.l = 0
 	return args
+
+
+
 
 def make_path(path):
 	os.makedirs(path,exist_ok=True)
@@ -44,9 +54,9 @@ def get_images(html_content, url, path):
 		filepath = os.path.join(path, filename)
 		try:
 			response = requests.get(img_url, timeout=5)
-			if response.status_code == 200:
-				with open(filepath,"wb") as f:
-					f.write(response.content)
+			response.raise_for_status()
+			with open(filepath,"wb") as f:
+				f.write(response.content)
 		except:
 			print(f"[-] Failed to download: {img_url}")
 
@@ -62,45 +72,41 @@ def get_links(html_content,base_url):
 
 def acces_url(url):
 	try:
-		html_content = requests.get(url,timeout=3).text
-
+		response = requests.get(url,timeout=3)
+		response.raise_for_status()
+		return response.text
 	except:
-		sys.exit("Error fetching the url :{url}")
-	return html_content
+		print(f"Error fetching the url :{url}")
+		return None
 
 
-def spider(url,path,depth):
-	if depth <= 0:
+def spider(url,path,depth, visited_urls):
+	if depth < 0:
 			return
+	if url in visited_urls:
+		return
+	visited_urls.add(url)
 	html_content = acces_url(url)
-
-	# while depth >= 0:
+	if html_content is None:
+		return
 
 	get_images(html_content, url,path)
+	if depth == 0:
+		return
 	arr_links = get_links(html_content,url)
-	i = 0;
 	for link in arr_links:
-		spider(link,path,depth-1)
+		spider(link,path,depth-1,visited_urls)
 
 
 def main():
 	args = parse_args()
-	if args.p:
-		path = args.p
-	else:
-		path = "data"
-	if args.l:
-		depth = args.l
-	else:
-		depth = 5
+	path = args.p
+	depth = args.l
 	url = args.url
+	visited_urls = set()
 	make_path(path)
-	spider(url,path,depth)
+	spider(url,path,depth,visited_urls)
 
 
 if __name__ == "__main__":
 	main()
-
-# https://www.magherallylens.com/simple-blogging-platforms/
-
-# next add maps to check visited links
