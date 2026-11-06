@@ -84,7 +84,7 @@ def spider(url,path,depth, visited_urls):
 	html_content = acces_url(url)
 	if html_content is None:
 		return
-
+ 
 	get_images(html_content, url,path)
 	if depth == 0:
 		return
