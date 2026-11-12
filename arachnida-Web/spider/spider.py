@@ -6,7 +6,37 @@ import requests
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup
 
+
 VALID_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.gif', '.bmp')
+
+
+def print_banner():
+    print("""
+  ____  ____  ___ ____ _____ ____
+ / ___||  _ \\|_ _|  _ \\ ____|  _ \\
+ \\___ \\| |_) || || | | |  _| | |_) |
+  ___) |  __/ | || |_| | |___|  _ <
+ |____/|_|   |___|____/|_____|_| \\_\\
+
+       [ WEB IMAGE CRAWLER ]
+    """)
+
+
+def print_status(url, depth, path):
+	print("--------------------------------")
+	print(f" TARGET : {url}")
+	print(f" DEPTH  : {depth}")
+	print(f" OUTPUT : {path}")
+	print("--------------------------------")
+
+
+def print_finished():
+	print("\n--------------------------------")
+	print("[OK] CRAWLING COMPLETED")
+	print("--------------------------------")
+
+
+
 
 def parse_args():
 	parser = argparse.ArgumentParser(description="Spider")
@@ -67,7 +97,8 @@ def get_links(html_content,base_url):
 	for links in soup.find_all("a",href=True):
 		base_link = links.get("href")
 		full_link = urljoin(base_url, base_link)
-		if full_link.startswith("http"):
+		parsed_link = urlparse(full_link)
+		if parsed_link.scheme in ("http","https"):
 			arr_links.append(full_link)
 	return arr_links
 
@@ -99,13 +130,17 @@ def spider(url,path,depth, visited_urls):
 		spider(link,path,depth-1,visited_urls)
 
 def main():
+	print_banner()
+	
 	args = parse_args()
 	path = args.p
 	depth = args.l
 	url = args.url
+	print_status(url,depth,path)
 	visited_urls = set()
 	make_path(path)
 	spider(url,path,depth,visited_urls)
+	print_finished()
 
 if __name__ == "__main__":
 	main()
