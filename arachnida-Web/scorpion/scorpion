@@ -41,7 +41,7 @@ def get_basic_info(image,path):
 		print(f" RESOLUTION : {image.width} x {image.height}")
 		print(f" MODE       : {image.mode}")
 		if path.endswith(types):	
-			print(f" CREATION DATE: {image.info.get("Creation Time") or image.info.get("date:create")}")
+			print(f" CREATION DATE: {image.info.get('Creation Time') or image.info.get('date:create')}")
 		print("================================")
 	except ValueError as e:
 		print(f"Vallue not found : {e}")
