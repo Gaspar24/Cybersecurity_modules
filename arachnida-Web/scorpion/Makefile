@@ -3,4 +3,4 @@ all: setup
 setup:
 	python3 -m venv venv
 	./venv/bin/pip install -r requirements.txt
-	chmod +x scorpion.py
+	chmod +x scorpion
