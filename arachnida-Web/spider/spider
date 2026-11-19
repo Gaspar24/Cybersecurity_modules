@@ -130,7 +130,7 @@ def spider(url,path,depth, visited_urls,downloaded_images):
 		return
 	arr_links = get_links(html_content,url)
 	for link in arr_links:
-		spider(link,path,depth-1,visited_urls)
+		spider(link,path,depth-1,visited_urls, downloaded_images)
 
 def main():
 	print_banner()
